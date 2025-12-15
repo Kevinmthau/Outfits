@@ -198,12 +198,25 @@ async function changeSeason(event, itemName, collection) {
 async function deletePage(event, pageName, collection) {
     event.stopPropagation();
 
+    // Validate inputs
+    if (!pageName || typeof pageName !== 'string') {
+        showToast('Invalid page name', 'error');
+        console.error('deletePage: invalid pageName', pageName);
+        return;
+    }
+    if (!collection || typeof collection !== 'string') {
+        showToast('Invalid collection', 'error');
+        console.error('deletePage: invalid collection', collection);
+        return;
+    }
+
     if (!confirm(`Delete ${pageName.replace('page_', 'Page ')}? This cannot be undone.`)) return;
 
     const collectionKey = mapCollectionToKey(collection);
+    const url = `/api/page/${encodeURIComponent(collectionKey)}/${encodeURIComponent(pageName)}`;
 
     try {
-        const response = await fetch(`/api/page/${collectionKey}/${pageName}`, {
+        const response = await fetch(url, {
             method: 'DELETE'
         });
 
@@ -217,6 +230,7 @@ async function deletePage(event, pageName, collection) {
             showToast(result.error || 'Failed to delete page', 'error');
         }
     } catch (err) {
+        console.error('deletePage error:', err, 'URL:', url);
         showToast('Failed to delete page: ' + err.message, 'error');
     }
 }
