@@ -80,11 +80,15 @@ def filter_by_season(clothing_index: Dict, page_items: Dict, season: str, page_s
         if page in season_pages
     }
 
-    # clothing_index uses integers, season_pages uses "page_X" strings
-    # Convert integers to "page_X" format for consistency with image naming
+    # Filter clothing index - pages may be integers or "page_X" strings
     filtered_clothing_index = {}
     for item, pages in clothing_index.items():
-        filtered_pages = [f"page_{p}" for p in pages if f"page_{p}" in season_pages]
+        filtered_pages = []
+        for p in pages:
+            # Handle both integer and string formats
+            page_key = p if isinstance(p, str) and p.startswith("page_") else f"page_{p}"
+            if page_key in season_pages:
+                filtered_pages.append(page_key)
         if filtered_pages:
             filtered_clothing_index[item] = filtered_pages
 
