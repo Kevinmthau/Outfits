@@ -133,15 +133,30 @@ async function changeCategory(event, itemName, collection, currentCategory) {
     }
 }
 
-// Change season for all pages of an item (Fall/Winter only)
+// Change season for all pages of an item
 async function changeSeason(event, itemName, collection) {
     event.stopPropagation();
 
-    const seasons = ['fall', 'winter', 'both'];
-    const icons = {'fall': '🍂', 'winter': '❄️', 'both': '🍂❄️'};
+    // Define season options based on collection
+    let seasons, icons;
+    const collectionLower = collection.toLowerCase();
+
+    if (collectionLower === 'fall' || collectionLower === 'winter') {
+        seasons = ['fall', 'winter', 'both'];
+        icons = {'fall': '🍂', 'winter': '❄️', 'both': '🍂❄️'};
+    } else if (collectionLower === 'summer') {
+        seasons = ['summer', 'spring', 'both'];
+        icons = {'summer': '☀️', 'spring': '🌸', 'both': '☀️🌸'};
+    } else if (collectionLower === 'spring') {
+        seasons = ['spring', 'summer', 'fall', 'all'];
+        icons = {'spring': '🌸', 'summer': '☀️', 'fall': '🍂', 'all': '🌸☀️🍂'};
+    } else {
+        showToast('Unknown collection', 'error');
+        return;
+    }
 
     const options = seasons.map((s, i) => `${i + 1}. ${icons[s]} ${s.charAt(0).toUpperCase() + s.slice(1)}`).join('\n');
-    const choice = prompt(`Change season for all pages of:\n"${itemName}"\n\n${options}\n\nEnter number (1-3):`);
+    const choice = prompt(`Change season for all pages of:\n"${itemName}"\n\n${options}\n\nEnter number (1-${seasons.length}):`);
 
     if (!choice) return;
 
@@ -152,12 +167,14 @@ async function changeSeason(event, itemName, collection) {
     }
 
     const newSeason = seasons[index];
+    const collectionKey = mapCollectionToKey(collection);
 
     try {
         const response = await fetch('/api/item/season', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                collection: collectionKey,
                 item_name: itemName,
                 new_season: newSeason
             })

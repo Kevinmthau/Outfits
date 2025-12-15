@@ -40,8 +40,15 @@ DATA_FILES: Dict[str, Dict[str, Path]] = {
     },
 }
 
-# Page seasons file (for Fall/Winter split)
-PAGE_SEASONS_FILE = BASE_DIR / "page_seasons_fw.json"
+# Page seasons files (for seasonal filtering within each collection)
+PAGE_SEASONS_FILES: Dict[str, Path] = {
+    "summer": BASE_DIR / "page_seasons_summer.json",
+    "spring": BASE_DIR / "page_seasons_spring.json",
+    "fw": BASE_DIR / "page_seasons_fw.json",
+}
+
+# Legacy alias for backward compatibility
+PAGE_SEASONS_FILE = PAGE_SEASONS_FILES["fw"]
 
 # Static site output
 DIST_DIR = BASE_DIR / "dist"

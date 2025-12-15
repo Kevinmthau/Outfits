@@ -10,7 +10,7 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-from config import DATA_FILES, COLLECTION_PATHS, PAGE_SEASONS_FILE, BASE_DIR, CATEGORY_ORDER, CATEGORY_ICONS
+from config import DATA_FILES, COLLECTION_PATHS, PAGE_SEASONS_FILE, PAGE_SEASONS_FILES, BASE_DIR, CATEGORY_ORDER, CATEGORY_ICONS
 
 app = Flask(__name__)
 
@@ -475,32 +475,52 @@ def api_change_category():
 
 @app.route('/api/item/season', methods=['PUT'])
 def api_change_item_season():
-    """Change season for all pages of an item (fall/winter/both)."""
+    """Change season for all pages of an item."""
     try:
         data = request.get_json()
+        collection = data.get('collection')
         item_name = data.get('item_name')
         new_season = data.get('new_season')
 
         if not item_name or not new_season:
             return jsonify({'error': 'Missing required fields'}), 400
 
-        if new_season not in ['fall', 'winter', 'both']:
-            return jsonify({'error': 'Invalid season. Must be fall, winter, or both'}), 400
+        # Validate season based on collection
+        valid_seasons = {
+            'fw': ['fall', 'winter', 'both'],
+            'summer': ['summer', 'spring', 'both'],
+            'spring': ['spring', 'summer', 'fall', 'all'],
+        }
 
-        # Load fw clothing index to find all pages for this item
-        fw_index, _ = load_collection_data('fw')
+        # Default to fw if no collection specified (backward compatibility)
+        if not collection:
+            collection = 'fw'
+
+        if collection not in valid_seasons:
+            return jsonify({'error': f'Invalid collection: {collection}'}), 400
+
+        if new_season not in valid_seasons[collection]:
+            return jsonify({'error': f'Invalid season for {collection}. Must be one of: {valid_seasons[collection]}'}), 400
+
+        # Load clothing index to find all pages for this item
+        clothing_index, _ = load_collection_data(collection)
 
         # Find pages for this item
-        pages = fw_index.get(item_name, [])
+        pages = clothing_index.get(item_name, [])
         if not pages:
-            return jsonify({'error': f'Item "{item_name}" not found'}), 404
+            return jsonify({'error': f'Item "{item_name}" not found in {collection}'}), 404
+
+        # Get the appropriate seasons file for this collection
+        seasons_file = PAGE_SEASONS_FILES.get(collection)
+        if not seasons_file:
+            return jsonify({'error': f'No seasons file for collection: {collection}'}), 400
 
         # Load and update seasons for all pages
-        seasons = load_json(PAGE_SEASONS_FILE)
+        seasons = load_json(seasons_file)
         for page in pages:
             page_key = f"page_{page}" if isinstance(page, int) else page
             seasons[page_key] = new_season
-        save_json(PAGE_SEASONS_FILE, seasons)
+        save_json(seasons_file, seasons)
 
         return jsonify({'success': True, 'message': f'Changed {len(pages)} pages to {new_season}'})
 

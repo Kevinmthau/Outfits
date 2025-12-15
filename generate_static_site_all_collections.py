@@ -139,6 +139,14 @@ def generate_collection_html(collection_name: str, clothing_index: Dict, page_it
     categorized_items = categorize_items(clothing_index, collection_key, page_items)
     category_order = CATEGORY_ORDER.get(collection_key, CATEGORY_ORDER["summer"])
 
+    # Season button icons based on collection
+    season_icons = {
+        'summer': '☀️🌸',
+        'spring': '🌸☀️🍂',
+        'fall': '🍂❄️',
+        'winter': '🍂❄️',
+    }
+
     category_sections = []
     for category in category_order:
         if category not in categorized_items or not categorized_items[category]:
@@ -155,14 +163,21 @@ def generate_collection_html(collection_name: str, clothing_index: Dict, page_it
                         </div>
                         <div class="item-grid">"""
 
-        for item_name, pages, _ in items:
+        for item_name, pages, item_category in items:
             escaped_item = item_name.replace("'", "\\'").replace('"', '\\"')
+
+            # Season button for all collections
+            season_icon = season_icons.get(collection_name.lower(), '📅')
+            season_btn = f'''<button class="season-btn" onclick="changeSeason(event, '{escaped_item}', '{collection_name}')" title="Change season">{season_icon}</button>'''
+
             section_html += f"""
                             <div class="item-card" data-item-name="{item_name}" onclick="showItemDetail('{escaped_item}', '{collection_name}', '{image_folder}')">
                                 <div class="item-name">{item_name}</div>
                                 <div class="item-count">
                                     Appears on {len(pages)} page{'s' if len(pages) > 1 else ''}
                                 </div>
+                                {season_btn}
+                                <button class="category-btn" onclick="changeCategory(event, '{escaped_item}', '{collection_name}', '{item_category}')" title="Change category">&#128193;</button>
                                 <button class="edit-btn" onclick="editItem(event, '{escaped_item}', '{collection_name}')" title="Edit item name">&#9998;</button>
                             </div>"""
 
