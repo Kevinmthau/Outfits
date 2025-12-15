@@ -159,6 +159,7 @@ def generate_collection_html(collection_name: str, clothing_index: Dict, page_it
                                 <div class="item-count">
                                     Appears on {len(pages)} page{'s' if len(pages) > 1 else ''}
                                 </div>
+                                <button class="edit-btn" onclick="editItem(event, '{escaped_item}', '{collection_name}')" title="Edit item name">&#9998;</button>
                             </div>"""
 
         section_html += """

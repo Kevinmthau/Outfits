@@ -67,14 +67,15 @@ body {
 }
 
 .category-tabs button {
-    padding: 8px 16px;
-    font-size: 0.9rem;
+    padding: 10px 14px;
+    font-size: 1.3rem;
     border: none;
     border-radius: 20px;
     cursor: pointer;
     background-color: #bdc3c7;
     color: #2c3e50;
     transition: all 0.2s;
+    min-width: 44px;
 }
 
 .category-tabs button:hover {
@@ -343,6 +344,127 @@ body {
     color: #bbb;
 }
 
+/* Edit/Delete Buttons */
+.item-card, .page-card {
+    position: relative;
+}
+
+.edit-btn, .delete-btn, .category-btn, .season-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s, background-color 0.2s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    z-index: 10;
+}
+
+.category-btn {
+    right: 48px;
+    background-color: #9b59b6;
+    color: white;
+}
+
+.category-btn:hover {
+    background-color: #8e44ad;
+    transform: scale(1.1);
+}
+
+.season-btn {
+    right: 88px;
+    background-color: #27ae60;
+    color: white;
+}
+
+.season-btn:hover {
+    background-color: #1e8449;
+    transform: scale(1.1);
+}
+
+.item-card:hover .edit-btn,
+.item-card:hover .category-btn,
+.item-card:hover .season-btn,
+.page-card:hover .delete-btn {
+    opacity: 1;
+}
+
+.edit-btn {
+    background-color: #3498db;
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #2980b9;
+    transform: scale(1.1);
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+    transform: scale(1.1);
+}
+
+/* Toast Notifications */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 14px 24px;
+    border-radius: 8px;
+    color: white;
+    z-index: 1100;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-weight: 500;
+    max-width: 400px;
+}
+
+.toast.success {
+    background-color: #27ae60;
+}
+
+.toast.error {
+    background-color: #e74c3c;
+}
+
+.toast.fade-out {
+    animation: slideOut 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
 /* Utilities */
 .hidden {
     display: none !important;
@@ -378,8 +500,9 @@ body {
     }
 
     .category-tabs button {
-        padding: 6px 12px;
-        font-size: 0.8rem;
+        padding: 8px 10px;
+        font-size: 1.2rem;
+        min-width: 40px;
     }
 
     .content {
@@ -504,5 +627,30 @@ body {
         top: 10px;
         right: 15px;
         font-size: 30px;
+    }
+
+    /* Always show edit/delete/category/season buttons on mobile (no hover) */
+    .edit-btn, .delete-btn, .category-btn, .season-btn {
+        opacity: 0.8;
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    .category-btn {
+        right: 42px;
+    }
+
+    .season-btn {
+        right: 76px;
+    }
+
+    .toast {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        padding: 12px 16px;
+        font-size: 0.9rem;
     }
 }

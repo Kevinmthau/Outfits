@@ -107,7 +107,7 @@ CATEGORY_ICONS: Dict[str, str] = {
     "Tops": "👔",
     "Bottoms": "👖",
     "Footwear": "👞",
-    "Accessories": "🎩",
+    "Accessories": "🧣",
     "Suits": "🤵",
     "Layering": "🦺",
     "Activewear": "🏃",

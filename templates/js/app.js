@@ -9,6 +9,201 @@ let currentCategory = 'all';
 // Data will be injected by template
 // const summerClothingIndex, summerPageItems, etc.
 
+// =============================================================================
+// Edit/Delete Functions
+// =============================================================================
+
+// Map UI collection names to backend keys
+function mapCollectionToKey(collection) {
+    const map = {
+        'Summer': 'summer',
+        'Spring': 'spring',
+        'Fall': 'fw',
+        'Winter': 'fw',
+        'summer': 'summer',
+        'spring': 'spring',
+        'fall': 'fw',
+        'winter': 'fw'
+    };
+    return map[collection] || collection.toLowerCase();
+}
+
+// Show toast notification
+function showToast(message, type = 'success') {
+    // Remove existing toast
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Edit item name
+async function editItem(event, itemName, collection) {
+    event.stopPropagation();
+
+    const newName = prompt('Enter new name:', itemName);
+    if (!newName || newName === itemName) return;
+
+    const collectionKey = mapCollectionToKey(collection);
+
+    try {
+        const response = await fetch('/api/item/rename', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                collection: collectionKey,
+                old_name: itemName,
+                new_name: newName
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            showToast(result.message || `Renamed "${itemName}" to "${newName}"`);
+            // Reload but stay on current collection and category
+            window.location.hash = `${currentCollection}/${currentCategory}`;
+            window.location.reload();
+        } else {
+            showToast(result.error || 'Failed to rename item', 'error');
+        }
+    } catch (err) {
+        showToast('Failed to rename item: ' + err.message, 'error');
+    }
+}
+
+// Change item category
+async function changeCategory(event, itemName, collection, currentCategory) {
+    event.stopPropagation();
+
+    const categories = ['Bottoms', 'Tops', 'Footwear', 'Outerwear', 'Knitwear', 'Suits', 'Accessories'];
+
+    // Create a simple selection prompt
+    const categoryOptions = categories.map((cat, i) => `${i + 1}. ${cat}${cat === currentCategory ? ' (current)' : ''}`).join('\n');
+    const choice = prompt(`Select new category for:\n"${itemName}"\n\n${categoryOptions}\n\nEnter number (1-${categories.length}):`);
+
+    if (!choice) return;
+
+    const index = parseInt(choice) - 1;
+    if (isNaN(index) || index < 0 || index >= categories.length) {
+        showToast('Invalid selection', 'error');
+        return;
+    }
+
+    const newCategory = categories[index];
+    if (newCategory === currentCategory) {
+        showToast('Category unchanged', 'error');
+        return;
+    }
+
+    const collectionKey = mapCollectionToKey(collection);
+
+    try {
+        const response = await fetch('/api/item/category', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                collection: collectionKey,
+                item_name: itemName,
+                new_category: newCategory
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            showToast(result.message || `Changed to ${newCategory}`);
+            // Reload but stay on current collection and category
+            window.location.hash = `${currentCollection}/${currentCategory}`;
+            window.location.reload();
+        } else {
+            showToast(result.error || 'Failed to change category', 'error');
+        }
+    } catch (err) {
+        showToast('Failed to change category: ' + err.message, 'error');
+    }
+}
+
+// Change season for all pages of an item (Fall/Winter only)
+async function changeSeason(event, itemName, collection) {
+    event.stopPropagation();
+
+    const seasons = ['fall', 'winter', 'both'];
+    const icons = {'fall': '🍂', 'winter': '❄️', 'both': '🍂❄️'};
+
+    const options = seasons.map((s, i) => `${i + 1}. ${icons[s]} ${s.charAt(0).toUpperCase() + s.slice(1)}`).join('\n');
+    const choice = prompt(`Change season for all pages of:\n"${itemName}"\n\n${options}\n\nEnter number (1-3):`);
+
+    if (!choice) return;
+
+    const index = parseInt(choice) - 1;
+    if (isNaN(index) || index < 0 || index >= seasons.length) {
+        showToast('Invalid selection', 'error');
+        return;
+    }
+
+    const newSeason = seasons[index];
+
+    try {
+        const response = await fetch('/api/item/season', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                item_name: itemName,
+                new_season: newSeason
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            showToast(result.message || `Changed to ${newSeason}`);
+            window.location.hash = `${currentCollection}/${currentCategory}`;
+            window.location.reload();
+        } else {
+            showToast(result.error || 'Failed to change season', 'error');
+        }
+    } catch (err) {
+        showToast('Failed to change season: ' + err.message, 'error');
+    }
+}
+
+// Delete page
+async function deletePage(event, pageName, collection) {
+    event.stopPropagation();
+
+    if (!confirm(`Delete ${pageName.replace('page_', 'Page ')}? This cannot be undone.`)) return;
+
+    const collectionKey = mapCollectionToKey(collection);
+
+    try {
+        const response = await fetch(`/api/page/${collectionKey}/${pageName}`, {
+            method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            showToast(result.message || `Deleted ${pageName}`);
+            // Refresh the page to reload data
+            window.location.reload();
+        } else {
+            showToast(result.error || 'Failed to delete page', 'error');
+        }
+    } catch (err) {
+        showToast('Failed to delete page: ' + err.message, 'error');
+    }
+}
+
 // Fuzzy Search Implementation
 function levenshteinDistance(str1, str2) {
     const m = str1.length;
@@ -244,9 +439,11 @@ function showItemDetail(itemName, collection, imageFolder) {
     document.title = itemName + ' - ' + collection + ' Collection';
 
     const content = document.getElementById('item-detail-content');
+
     content.innerHTML = `
         <div class="page-images">
-            ${pages.map(page => `
+            ${pages.map(page => {
+                return `
                 <div class="page-card">
                     <img src="${imageFolder}/${page}.png"
                          alt="${page}"
@@ -257,8 +454,11 @@ function showItemDetail(itemName, collection, imageFolder) {
                     <div class="page-title" onclick="showPageDetail('${page}', '${collection}', '${imageFolder}')" style="cursor: pointer;">
                         ${page.replace('page_', 'Page ')}
                     </div>
+                    <button class="delete-btn" onclick="deletePage(event, '${page}', '${collection}')" title="Delete page">
+                        &#128465;
+                    </button>
                 </div>
-            `).join('')}
+            `}).join('')}
         </div>
     `;
 }
@@ -333,5 +533,17 @@ function showPageDetail(pageName, collection, imageFolder) {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
-    showCollection('summer');
+    // Check for saved state in URL hash (e.g., #fall/Suits)
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+        const [collection, category] = hash.split('/');
+        if (collection) {
+            showCollection(collection);
+        }
+        if (category && category !== 'all') {
+            setTimeout(() => filterByCategory(category), 100);
+        }
+    } else {
+        showCollection('summer');
+    }
 });

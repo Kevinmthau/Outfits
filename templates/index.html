@@ -19,12 +19,14 @@
             <button onclick="showCollection('winter')" id="nav-winter">❄️ Winter</button>
         </div>
         <div class="category-tabs">
-            <button onclick="filterByCategory('all')" class="active" id="cat-all">All</button>
-            <button onclick="filterByCategory('Bottoms')" id="cat-Bottoms">👖 Bottoms</button>
-            <button onclick="filterByCategory('Tops')" id="cat-Tops">👔 Tops</button>
-            <button onclick="filterByCategory('Footwear')" id="cat-Footwear">👞 Shoes</button>
-            <button onclick="filterByCategory('Outerwear')" id="cat-Outerwear">🧥 Jackets</button>
-            <button onclick="filterByCategory('Accessories')" id="cat-Accessories">👔 Ties</button>
+            <button onclick="filterByCategory('all')" class="active" id="cat-all" title="All">All</button>
+            <button onclick="filterByCategory('Bottoms')" id="cat-Bottoms" title="Pants/Shorts">👖</button>
+            <button onclick="filterByCategory('Tops')" id="cat-Tops" title="Shirts">👕</button>
+            <button onclick="filterByCategory('Knitwear')" id="cat-Knitwear" title="Sweaters">🧶</button>
+            <button onclick="filterByCategory('Footwear')" id="cat-Footwear" title="Shoes">👞</button>
+            <button onclick="filterByCategory('Outerwear')" id="cat-Outerwear" title="Jackets">🧥</button>
+            <button onclick="filterByCategory('Suits')" id="cat-Suits" title="Suits">🤵</button>
+            <button onclick="filterByCategory('Accessories')" id="cat-Accessories" title="Accessories">🧣</button>
         </div>
         <div class="content">
             <!-- Summer Collection View -->
@@ -106,6 +108,7 @@
         const fallPageItems = {{ fall_items_json }};
         const winterClothingIndex = {{ winter_index_json }};
         const winterPageItems = {{ winter_items_json }};
+        const pageSeasons = {{ page_seasons_json }};
 
 {{ js_content }}
     </script>
