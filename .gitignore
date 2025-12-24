@@ -12,6 +12,7 @@ ENV/
 # Backup files
 *_backup.json
 *.bak
+backups/
 
 # OS files
 .DS_Store
