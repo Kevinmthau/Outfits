@@ -36,13 +36,13 @@ The application maintains separate datasets for each collection with bidirection
 
 ### Local Development
 ```bash
-# Start Flask development server (Summer collection only)
+# Start Flask development server (all collections)
 python3 app.py
-# Visit http://localhost:5000
+# Visit http://localhost:5001
 
-# Start data cleaning web interface
-python3 data_cleaner.py
-# Visit http://localhost:5001/clean
+# Start outfit manager for data editing (delete, rename, recategorize)
+python3 outfit_manager.py
+# Visit http://localhost:5002
 
 # Test static site locally
 cd dist && python3 -m http.server 8080
@@ -60,29 +60,18 @@ python3 extract_spring_clothing_improved.py
 
 # Extract Fall/Winter collection with seasonal categories
 python3 extract_fall_winter_clothing.py
-
-# Clean OCR artifacts (e.g., "i The Row" → "The Row")
-python3 clean_ocr_artifacts.py
 ```
 
 ### Data Management
 ```bash
+# Use outfit manager for interactive data editing
+python3 outfit_manager.py
+
 # Rebuild clothing index after manual edits to page_items.json
 python3 rebuild_index.py
 
 # Analyze data for cleaning opportunities
 python3 analyze_data.py
-
-# Merge duplicate items
-python3 merge_duplicates.py
-
-# Collection-specific cleaning scripts
-python3 clean_fw_duplicates.py
-python3 merge_loro_piana_blazers.py
-python3 merge_mislabeled_blazer.py
-python3 merge_woolly_trousers.py
-python3 update_coat_to_trench.py
-python3 update_loro_piana_coat.py
 ```
 
 ### Static Site Generation
@@ -162,7 +151,7 @@ netlify deploy --prod --dir=dist
 
 ### OCR Artifacts
 - Problem: Items like "i The Row brown tassel loafer" or "of The Row"
-- Solution: Run `python3 clean_ocr_artifacts.py`
+- Solution: Use `outfit_manager.py` to rename items, or edit JSON directly
 
 ### Combined Items
 - Problem: "Caruso camel blazer Drake's ivory corduroy" as single item
@@ -170,12 +159,11 @@ netlify deploy --prod --dir=dist
 
 ### Duplicate/Variant Items
 - Problem: Case variations, typos, or mislabeled items
-- Solution: Create specific merge scripts following the pattern of existing ones
+- Solution: Use `outfit_manager.py` to merge/rename items
 
 ### Workflow for Data Updates
 1. Extract with OCR: `python3 extract_[collection]_clothing.py`
-2. Clean artifacts if needed: `python3 clean_ocr_artifacts.py`
-3. Manual review: Edit `page_items_[collection].json`
-4. Rebuild index: `python3 rebuild_index.py`
-5. Generate site: `python3 generate_static_site_all_collections.py`
-6. Commit and push (Netlify auto-deploys)
+2. Manual review/edit: Use `python3 outfit_manager.py` or edit JSON directly
+3. Rebuild index: `python3 rebuild_index.py`
+4. Generate site: `python3 generate_static_site_all_collections.py`
+5. Commit and push (Netlify auto-deploys)

@@ -19,7 +19,7 @@ from datetime import datetime
 from pathlib import Path
 from flask import Flask, render_template_string, request, jsonify, redirect, url_for, send_from_directory
 
-from config import DATA_FILES, BASE_DIR, PAGE_SEASONS_FILE, CATEGORY_ORDER, COLLECTION_PATHS
+from config import DATA_FILES, BASE_DIR, PAGE_SEASONS_FILE, CATEGORY_ORDER, COLLECTION_PATHS, OUTFIT_MANAGER_PORT
 
 app = Flask(__name__)
 
@@ -646,5 +646,5 @@ def change_category():
 
 if __name__ == '__main__':
     print("Starting Outfit Manager...")
-    print("Visit http://localhost:5002")
-    app.run(port=5002, debug=True)
+    print(f"Visit http://localhost:{OUTFIT_MANAGER_PORT}")
+    app.run(port=OUTFIT_MANAGER_PORT, debug=True)

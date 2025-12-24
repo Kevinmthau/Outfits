@@ -13,7 +13,7 @@ Features:
 import json
 import shutil
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Set
+from typing import Dict, List, Optional, Tuple
 
 from config import (
     DATA_FILES,
@@ -23,6 +23,11 @@ from config import (
     CATEGORY_ORDER,
     CATEGORY_ICONS,
     PAGE_SEASONS_FILE,
+)
+from data_loader import (
+    filter_by_season,
+    categorize_items,
+    load_page_seasons_for_collection,
 )
 
 # Template directory
@@ -35,14 +40,6 @@ def load_template(name: str) -> str:
     if template_path.exists():
         return template_path.read_text(encoding='utf-8')
     raise FileNotFoundError(f"Template not found: {template_path}")
-
-
-def load_page_seasons() -> Dict[str, str]:
-    """Load the page seasons mapping (page -> 'fall' or 'winter')."""
-    if PAGE_SEASONS_FILE.exists():
-        with open(PAGE_SEASONS_FILE, 'r') as f:
-            return json.load(f)
-    return {}
 
 
 def load_collection_data(collection: str) -> Tuple[Dict, Dict, Optional[Dict]]:
@@ -66,68 +63,6 @@ def load_collection_data(collection: str) -> Tuple[Dict, Dict, Optional[Dict]]:
             category_stats = json.load(f)
 
     return clothing_index, page_items, category_stats
-
-
-def filter_by_season(clothing_index: Dict, page_items: Dict, season: str, page_seasons: Dict[str, str]) -> Tuple[Dict, Dict]:
-    """Filter clothing index and page items to only include pages for the given season."""
-    season_pages: Set[str] = set()
-    for page, page_season in page_seasons.items():
-        if page_season == season:
-            season_pages.add(page)
-
-    filtered_page_items = {
-        page: items for page, items in page_items.items()
-        if page in season_pages
-    }
-
-    # Filter clothing index - pages may be integers or "page_X" strings
-    filtered_clothing_index = {}
-    for item, pages in clothing_index.items():
-        filtered_pages = []
-        for p in pages:
-            # Handle both integer and string formats
-            page_key = p if isinstance(p, str) and p.startswith("page_") else f"page_{p}"
-            if page_key in season_pages:
-                filtered_pages.append(page_key)
-        if filtered_pages:
-            filtered_clothing_index[item] = filtered_pages
-
-    return filtered_clothing_index, filtered_page_items
-
-
-def categorize_items(clothing_index: Dict[str, List], collection: str, page_items: Dict = None) -> Dict[str, List[Tuple[str, List, str]]]:
-    """Categorize items using category data from the item names or page_items."""
-    categories = CATEGORY_ORDER.get(collection, CATEGORY_ORDER["summer"])
-    categorized: Dict[str, List[Tuple[str, List, str]]] = {cat: [] for cat in categories}
-
-    # Build item->category lookup from page_items if available
-    item_category_lookup = {}
-    if page_items:
-        for page, items in page_items.items():
-            for item_data in items:
-                if isinstance(item_data, dict) and 'name' in item_data and 'category' in item_data:
-                    item_category_lookup[item_data['name']] = item_data['category']
-
-    for item, pages in clothing_index.items():
-        if item in item_category_lookup:
-            item_name = item
-            category = item_category_lookup[item]
-        elif '(' in item and ')' in item:
-            category = item[item.rfind('(')+1:item.rfind(')')]
-            item_name = item[:item.rfind('(')].strip()
-        else:
-            item_name = item
-            category = "Other"
-
-        if category in categorized:
-            categorized[category].append((item_name, pages, category))
-        else:
-            categorized["Other"].append((item_name, pages, "Other"))
-
-    for category in categorized:
-        categorized[category].sort(key=lambda x: len(x[1]), reverse=True)
-
-    return categorized
 
 
 def generate_collection_html(collection_name: str, clothing_index: Dict, page_items: Dict, image_folder: str) -> str:
@@ -199,7 +134,7 @@ def create_all_collections_html() -> str:
     fw_index, fw_items, _ = load_collection_data('fw')
 
     # Load page seasons and filter Fall/Winter into separate collections
-    page_seasons = load_page_seasons()
+    page_seasons = load_page_seasons_for_collection("fw")
     fall_index, fall_items = filter_by_season(fw_index, fw_items, 'fall', page_seasons)
     winter_index, winter_items = filter_by_season(fw_index, fw_items, 'winter', page_seasons)
 

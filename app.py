@@ -10,7 +10,13 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-from config import DATA_FILES, COLLECTION_PATHS, PAGE_SEASONS_FILE, PAGE_SEASONS_FILES, BASE_DIR, CATEGORY_ORDER, CATEGORY_ICONS
+from config import DATA_FILES, COLLECTION_PATHS, PAGE_SEASONS_FILE, PAGE_SEASONS_FILES, BASE_DIR, CATEGORY_ORDER, CATEGORY_ICONS, APP_PORT
+from data_loader import (
+    filter_by_season,
+    categorize_items,
+    rebuild_index,
+    load_page_seasons_for_collection,
+)
 
 app = Flask(__name__)
 
@@ -62,31 +68,9 @@ def save_collection_data(collection: str, index: dict, page_items: dict) -> None
         save_json(files["page_items"], page_items)
 
 
-def rebuild_index(page_items: dict) -> dict:
-    """Rebuild clothing index from page_items."""
-    index = {}
-    for page, items in page_items.items():
-        for item_data in items:
-            if isinstance(item_data, dict):
-                name = item_data.get("name", "")
-            else:
-                name = item_data
-
-            if name:
-                if name not in index:
-                    index[name] = []
-                index[name].append(page)
-
-    # Sort pages for each item
-    for name in index:
-        index[name] = sorted(set(index[name]), key=lambda x: int(x.replace("page_", "")) if "page_" in str(x) else int(x))
-
-    return index
-
-
-# Load clothing data (legacy - for Summer only routes)
+# Legacy helper for Summer-only routes
 def load_data():
-    """Load clothing index and page items from JSON files"""
+    """Load clothing index and page items from JSON files (Summer collection only)."""
     try:
         with open('clothing_index.json', 'r') as f:
             clothing_index = json.load(f)
@@ -98,87 +82,8 @@ def load_data():
 
 
 def load_page_seasons():
-    """Load the page seasons mapping."""
-    if PAGE_SEASONS_FILE.exists():
-        with open(PAGE_SEASONS_FILE, 'r') as f:
-            return json.load(f)
-    return {}
-
-
-def filter_by_season(clothing_index, page_items, season, page_seasons):
-    """Filter clothing index and page items for a specific season."""
-    season_pages = set()
-    for page, page_season in page_seasons.items():
-        if page_season == season or page_season == 'both':
-            season_pages.add(page)
-
-    filtered_page_items = {
-        page: items for page, items in page_items.items()
-        if page in season_pages
-    }
-
-    filtered_clothing_index = {}
-    for item, pages in clothing_index.items():
-        filtered_pages = [p if isinstance(p, str) else f"page_{p}" for p in pages]
-        filtered_pages = [p for p in filtered_pages if p in season_pages]
-        if filtered_pages:
-            filtered_clothing_index[item] = filtered_pages
-
-    return filtered_clothing_index, filtered_page_items
-
-
-def categorize_items(clothing_index, collection, page_items=None):
-    """Categorize items by their category."""
-    categories = CATEGORY_ORDER.get(collection, CATEGORY_ORDER.get("summer", []))
-    # Remove "Other" from categories - we don't want it
-    categories = [c for c in categories if c != "Other"]
-    categorized = {cat: [] for cat in categories}
-
-    # Build item->category lookup from page_items
-    item_category_lookup = {}
-    if page_items:
-        for page, items in page_items.items():
-            for item_data in items:
-                if isinstance(item_data, dict):
-                    name = item_data.get("name", "")
-                    category = item_data.get("category", "Accessories")
-                    if name and name not in item_category_lookup:
-                        item_category_lookup[name] = category
-
-    for item_name, pages in clothing_index.items():
-        # Check if item name has category suffix like "Item Name (Category)"
-        # This is common in Summer collection
-        category = None
-        display_name = item_name
-
-        if ' (' in item_name and item_name.endswith(')'):
-            # Extract category from name like "The Row loafer (Footwear)"
-            base_name = item_name.rsplit(' (', 1)[0]
-            cat_from_name = item_name.rsplit(' (', 1)[1].rstrip(')')
-            if cat_from_name in categories:
-                category = cat_from_name
-                display_name = base_name
-
-        # If no category from name, try lookup
-        if not category:
-            # Try exact match first
-            category = item_category_lookup.get(item_name)
-            # Try without category suffix
-            if not category and ' (' in item_name:
-                base_name = item_name.rsplit(' (', 1)[0]
-                category = item_category_lookup.get(base_name)
-
-        # Default to Accessories if still no category
-        if not category or category not in categorized:
-            category = "Accessories"
-
-        categorized[category].append((display_name, pages, category))
-
-    # Sort items within each category
-    for category in categorized:
-        categorized[category].sort(key=lambda x: (-len(x[1]), x[0].lower()))
-
-    return categorized
+    """Load the page seasons mapping (wrapper for backward compatibility)."""
+    return load_page_seasons_for_collection("fw")
 
 
 def generate_collection_html(categorized_items, collection_name, image_folder, clothing_index=None):
@@ -552,4 +457,4 @@ def api_get_collection_data(collection):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True, host='0.0.0.0', port=APP_PORT)

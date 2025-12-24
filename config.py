@@ -197,3 +197,18 @@ COLLECTION_ICONS: Dict[str, str] = {
 
 DEFAULT_COLLECTION = "summer"
 FUZZY_SEARCH_THRESHOLD = 0.6
+
+# =============================================================================
+# SERVER PORTS
+# =============================================================================
+
+PORTS = {
+    "app": 5001,              # Main Flask app (app.py)
+    "data_cleaner": 5001,     # Data cleaner (data_cleaner.py) - shares port with app
+    "outfit_manager": 5002,   # Outfit manager (outfit_manager.py)
+}
+
+# Aliases for direct access
+APP_PORT = PORTS["app"]
+DATA_CLEANER_PORT = PORTS["data_cleaner"]
+OUTFIT_MANAGER_PORT = PORTS["outfit_manager"]
