@@ -46,7 +46,7 @@
     },
     {
       "name": "The Row woolly trouser",
-      "category": "Knitwear",
+      "category": "Bottoms",
       "season": "Winter"
     },
     {
@@ -92,7 +92,7 @@
     },
     {
       "name": "The Row woolly trouser",
-      "category": "Knitwear",
+      "category": "Bottoms",
       "season": "Winter"
     },
     {
@@ -192,7 +192,7 @@
     },
     {
       "name": "The Row woolly trouser",
-      "category": "Knitwear",
+      "category": "Bottoms",
       "season": "Winter"
     },
     {
@@ -271,7 +271,7 @@
   ],
   "page_17": [
     {
-      "name": "Loro Piana utility red trouser",
+      "name": "Loro Piana red utility trouser",
       "category": "Bottoms",
       "season": "Winter"
     },
@@ -331,12 +331,12 @@
       "season": "Winter"
     },
     {
-      "name": "The Row woolly",
-      "category": "Knitwear",
+      "name": "The Row woolly trouser",
+      "category": "Bottoms",
       "season": "Winter"
     },
     {
-      "name": "Loro Piana brown blazer",
+      "name": "The Row blazer",
       "category": "Outerwear",
       "season": "Winter"
     }
@@ -428,8 +428,8 @@
       "season": "Winter"
     },
     {
-      "name": "The Row woolly grey trouser",
-      "category": "Knitwear",
+      "name": "The Row woolly trouser",
+      "category": "Bottoms",
       "season": "Winter"
     },
     {
@@ -450,7 +450,7 @@
       "season": "Winter"
     },
     {
-      "name": "Brioni corduroy trouser",
+      "name": "The Row brown corduroy",
       "category": "Bottoms",
       "season": "Winter"
     },
@@ -521,8 +521,8 @@
       "season": "Winter"
     },
     {
-      "name": "The Row grey woolly trouser",
-      "category": "Knitwear",
+      "name": "The Row woolly trouser",
+      "category": "Bottoms",
       "season": "Winter"
     },
     {
@@ -626,7 +626,7 @@
       "season": "Winter"
     },
     {
-      "name": "Loro Piana blazer",
+      "name": "Loro Piana precious blazer",
       "category": "Outerwear",
       "season": "Winter"
     },
@@ -709,7 +709,7 @@
   ],
   "page_49": [
     {
-      "name": "Brioni corduroy trouser",
+      "name": "The Row brown corduroy",
       "category": "Bottoms",
       "season": "Winter"
     },
@@ -772,8 +772,8 @@
       "season": "Winter"
     },
     {
-      "name": "The Row grey woolly trouser",
-      "category": "Knitwear",
+      "name": "The Row woolly trouser",
+      "category": "Bottoms",
       "season": "Winter"
     },
     {
@@ -865,7 +865,7 @@
       "season": "Winter"
     },
     {
-      "name": "Brioni brown corduroy trouser",
+      "name": "Brioni brown corduroy",
       "category": "Bottoms",
       "season": "Winter"
     },
@@ -984,12 +984,12 @@
       "season": "Winter"
     },
     {
-      "name": "Brioni brown corduroy trouser",
+      "name": "Brioni brown corduroy",
       "category": "Bottoms",
       "season": "Winter"
     },
     {
-      "name": "Loro Piana brown precious blazer",
+      "name": "Loro Piana precious blazer",
       "category": "Outerwear",
       "season": "Winter"
     },
@@ -1028,7 +1028,7 @@
       "season": "Winter"
     },
     {
-      "name": "Brioni brown corduroy trouser",
+      "name": "Brioni brown corduroy",
       "category": "Bottoms",
       "season": "Winter"
     },
@@ -4136,7 +4136,7 @@
       "season": "Fall"
     },
     {
-      "name": "Beams khaki Sid Mashburn glen plaid blazer",
+      "name": "Sid Mashburn glen plaid blazer",
       "category": "Outerwear",
       "season": "Fall"
     },
@@ -4163,7 +4163,7 @@
       "season": "Fall"
     },
     {
-      "name": "Beams khaki Sid Mashburn glen plaid blazer",
+      "name": "Sid Mashburn glen plaid blazer",
       "category": "Outerwear",
       "season": "Fall"
     },
@@ -4195,7 +4195,7 @@
       "season": "Fall"
     },
     {
-      "name": "Beams khaki Sid Mashburn glen plaid blazer",
+      "name": "Sid Mashburn glen plaid blazer",
       "category": "Outerwear",
       "season": "Fall"
     },
@@ -4222,7 +4222,7 @@
       "season": "Fall"
     },
     {
-      "name": "Beams khaki Sid Mashburn glen plaid blazer",
+      "name": "Sid Mashburn glen plaid blazer",
       "category": "Outerwear",
       "season": "Fall"
     },
@@ -4254,7 +4254,7 @@
       "season": "Fall"
     },
     {
-      "name": "Beams khaki Umit Benan navy blazer",
+      "name": "Umit Benan navy blazer",
       "category": "Outerwear",
       "season": "Fall"
     },
