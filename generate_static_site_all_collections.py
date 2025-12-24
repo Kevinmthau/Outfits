@@ -216,6 +216,14 @@ def create_netlify_files_all_collections() -> None:
             shutil.copy2(favicon_path, DIST_DIR)
     print("✅ Copied favicon files")
 
+    # Copy PWA files
+    pwa_files = ['manifest.json', 'sw.js', 'icon-192.png', 'icon-512.png']
+    for pwa_file in pwa_files:
+        pwa_path = Path(pwa_file)
+        if pwa_path.exists():
+            shutil.copy2(pwa_path, DIST_DIR)
+    print("✅ Copied PWA files (manifest, service worker, icons)")
+
     print(f"\n🎉 Static site with all three collections ready for deployment!")
     print(f"📁 Files created in: {DIST_DIR.absolute()}")
     print(f"📊 Total files: {len(list(DIST_DIR.rglob('*')))}")
@@ -224,15 +232,13 @@ def create_netlify_files_all_collections() -> None:
 def main() -> None:
     """Main function."""
     print("🚀 Generating static site with Summer, Spring & Fall/Winter collections...")
-    print("   Features: Lazy loading, WebP support, Fuzzy search")
+    print("   Features: PWA, Offline support, Lazy loading, Fuzzy search")
     create_netlify_files_all_collections()
 
-    print(f"\n📱 Ready for mobile-friendly deployment with all collections!")
-    print(f"\n📋 Next steps:")
-    print(f"   1. (Optional) Run: python optimize_images.py all")
-    print(f"      This converts images to WebP for ~30-50% smaller files")
-    print(f"   2. Deploy to Netlify using: netlify deploy --prod --dir=dist")
-    print(f"   3. Or drag and drop the 'dist' folder to Netlify")
+    print(f"\n📱 Progressive Web App ready for deployment!")
+    print(f"   - Add to Home Screen support")
+    print(f"   - Offline browsing capability")
+    print(f"   - Native app-like experience")
 
 
 if __name__ == "__main__":
