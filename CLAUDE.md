@@ -12,6 +12,14 @@ Kevin's Outfit Finder is a mobile-first web application for browsing and discove
 - **Development Mode**: Flask web application (`app.py`) for local development and testing
 - **Production Mode**: Static site generation (`generate_static_site_all_collections.py`) for Netlify deployment
 
+### Core Modules
+- `config.py` - Centralized configuration (paths, categories, brands, ports)
+- `data_loader.py` - Shared data utilities (filter_by_season, categorize_items, rebuild_index)
+- `models.py` - Pydantic models for data validation
+- `app.py` - Flask dev server (port 5001)
+- `outfit_manager.py` - Data editing UI (port 5002)
+- `generate_static_site_all_collections.py` - Production static site builder
+
 ### Data Architecture
 The application maintains separate datasets for each collection with bidirectional mapping:
 
@@ -76,12 +84,8 @@ python3 analyze_data.py
 
 ### Static Site Generation
 ```bash
-# Generate static site with ALL three collections (REQUIRED for production)
+# Generate static site with all collections
 python3 generate_static_site_all_collections.py
-
-# Legacy generators (do not use for production)
-python3 generate_static_site_with_collections.py  # Summer + Spring only
-python3 generate_static_site.py                    # Summer only
 ```
 
 ### Deployment
